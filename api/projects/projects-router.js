@@ -20,7 +20,6 @@ router.get("/", (req, res) => {
       });
     });
 });
-module.exports = router;
 
 router.get("/:id", checkProjectId, (req, res) => {
   Project.get(req.params.id)
@@ -79,3 +78,17 @@ router.put("/:id", checkProjectId, (req, res) => {
   //   res.status(500).json({ message: "Error updating the project" });
   // });
 });
+
+router.delete("/:id", checkProjectId, (req, res) => {
+  Project.remove(req.params.id)
+    .then(() => {
+      res
+        .status(201)
+        .json({ message: "The project has been successfully deleted" });
+    })
+    .catch((error) => {
+      res.status(500).json({ message: `Error: ${error}` });
+    });
+});
+
+module.exports = router;
