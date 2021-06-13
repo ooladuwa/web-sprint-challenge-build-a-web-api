@@ -33,15 +33,30 @@ router.get("/:id", checkActionId, (req, res) => {
     });
 });
 
-router.post("/", validateAction, (res, req) => {
+router.post("/", validateAction, (req, res, next) => {
   Action.insert(req.body)
     .then((action) => {
       res.status(201).json(action);
     })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ message: "Error creating the action" });
-    });
+    .catch(next);
+});
+
+router.put("/:id", checkActionId, validateAction, (req, res, next) => {
+  Action.update(req.params.id, req.body)
+    .then((action) => {
+      res.status(200).json(action);
+    })
+    .catch(next);
+});
+
+router.delete("/:id", checkActionId, (req, res, next) => {
+  Action.remove(req.params.id)
+    .then(() => {
+      res
+        .status(201)
+        .json({ message: "The action has been successfully deleted" });
+    })
+    .catch(next);
 });
 
 module.exports = router;
