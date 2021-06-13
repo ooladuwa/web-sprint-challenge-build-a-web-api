@@ -30,7 +30,20 @@ const checkActionId = async (req, res, next) => {
     res.status(500).json({ message: `Error: ${error}` });
   }
 };
+
+const confirmProjectStatus = (req, res, next) => {
+  const { id } = req.params;
+
+  const project = Projects.get(id);
+  if (!project) {
+    res.status(404).json({ message: `Project with id: ${id} does not exist` });
+  } else {
+    next();
+  }
+};
+
 module.exports = {
   checkProjectId,
   checkActionId,
+  confirmProjectStatus,
 };

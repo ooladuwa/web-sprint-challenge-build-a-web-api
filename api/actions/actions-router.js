@@ -1,5 +1,6 @@
 const express = require("express");
 const { checkActionId } = require("../middlewares/middleware.js");
+const { confirmProjectStatus } = require("../middlewares/middleware.js");
 
 const Action = require("./actions-model");
 
@@ -27,6 +28,23 @@ router.get("/:id", checkActionId, (req, res) => {
     })
     .catch((error) => {
       res.status(500).json({ message: `Error: ${error}` });
+    });
+});
+
+router.post("/", confirmProjectStatus, (res, req) => {
+  Action.insert(req.body)
+    .then((action) => {
+      if (!action.project_id || !action.description || !action.notes) {
+        res
+          .status(400)
+          .json({ message: "Description and notes are required." });
+      } else {
+        res.status(201).json(action);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ message: "Error creating the action" });
     });
 });
 
