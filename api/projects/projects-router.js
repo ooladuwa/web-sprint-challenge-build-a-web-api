@@ -1,6 +1,6 @@
 // Write your "projects" router here!
 const express = require("express");
-const { default: knex } = require("knex");
+const { checkProjectId } = require("../middlewares/middleware.js");
 
 const Project = require("./projects-model.js");
 
@@ -22,17 +22,60 @@ router.get("/", (req, res) => {
 });
 module.exports = router;
 
-router.get("/:id", (req, res) => {
+router.get("/:id", checkProjectId, (req, res) => {
   Project.get(req.params.id)
     .then((project) => {
-      if (project) {
-        res.status(200).json(project);
+      res.status(200).json(project);
+    })
+    .catch((error) => {
+      res.status(500).json({ message: `Error: ${error}` });
+    });
+});
+
+router.post("/", (req, res) => {
+  Project.insert(req.body)
+    .then((project) => {
+      if (!project.name || !project.description) {
+        res.status(400).json({
+          message: "Name, description and completion status are required!",
+        });
       } else {
-        res.status(404).json({ message: "No project with that ID was found" });
+        res.status(201).json(project);
       }
     })
     .catch((error) => {
       console.log(error);
-      res.status(500).json({ message: "Error retrieving the project" });
+      res.status(500).json({ message: "Error creating the project" });
     });
+});
+
+router.put("/:id", checkProjectId, (req, res) => {
+  // let changes = req.body;
+  // let { id } = req.params;
+
+  Project.update(req.params.id, req.body)
+    .then((project) => {
+      res.status(200).json(project);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ message: "Error updating the project" });
+    });
+  // .then((project) => {
+  //   if (project.id !== id) {
+  //     res
+  //       .status(404)
+  //       .json({ message: "No project with the given ID was found" });
+  //   } else if (!project.name || !project.description) {
+  //     res.status(400).json({
+  //       message: "Name, description and completion status are required!",
+  //     });
+  //   } else {
+  //     res.status(200).json(project);
+  //   }
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  //   res.status(500).json({ message: "Error updating the project" });
+  // });
 });
