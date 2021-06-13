@@ -1,6 +1,6 @@
 const express = require("express");
 const { checkProjectId } = require("../middlewares/middleware.js");
-
+const { validateProject } = require("../middlewares/middleware.js");
 const Project = require("./projects-model.js");
 
 const router = express.Router();
@@ -30,16 +30,10 @@ router.get("/:id", checkProjectId, (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", validateProject, (req, res) => {
   Project.insert(req.body)
     .then((project) => {
-      if (!project.name || !project.description) {
-        res.status(400).json({
-          message: "Name, description and completion status are required!",
-        });
-      } else {
-        res.status(201).json(project);
-      }
+      res.status(201).json(project);
     })
     .catch((error) => {
       console.log(error);
@@ -47,7 +41,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.put("/:id", checkProjectId, (req, res) => {
+router.put("/:id", checkProjectId, validateProject, (req, res) => {
   // let changes = req.body;
   // let { id } = req.params;
 
@@ -91,9 +85,9 @@ router.delete("/:id", checkProjectId, (req, res) => {
 });
 
 router.get("/:id/actions", checkProjectId, (req, res) => {
-  Project.get(req.params.id)
+  Project.getProjectActions(req.params.id)
     .then((project) => {
-      res.status(200).json(project.actions);
+      res.status(200).json(project);
     })
     .catch((error) => {
       res.status(500).json({ message: `Error: ${error}` });

@@ -31,13 +31,30 @@ const checkActionId = async (req, res, next) => {
   }
 };
 
-const confirmProjectStatus = (req, res, next) => {
-  const { id } = req.params;
-
-  const project = Projects.get(id);
-  if (!project) {
-    res.status(404).json({ message: `Project with id: ${id} does not exist` });
+const validateProject = (req, res, next) => {
+  const { name, description } = req.body;
+  if (!name || !description) {
+    res
+      .status(400)
+      .json({ message: "Please be sure to include name and description." });
   } else {
+    req.name = name;
+    req.description = description;
+    next();
+  }
+};
+
+const validateAction = (req, res, next) => {
+  const { project_id, description, notes } = req.body;
+  if (!project_id || !description || !notes) {
+    res.status(400).json({
+      message:
+        "Please be sure to include a project id, a description, and notes.",
+    });
+  } else {
+    req.project_id = project_id;
+    req.description = description;
+    req.notes = notes;
     next();
   }
 };
@@ -45,5 +62,6 @@ const confirmProjectStatus = (req, res, next) => {
 module.exports = {
   checkProjectId,
   checkActionId,
-  confirmProjectStatus,
+  validateProject,
+  validateAction,
 };

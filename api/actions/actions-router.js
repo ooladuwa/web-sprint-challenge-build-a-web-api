@@ -1,7 +1,9 @@
 const express = require("express");
-const { checkActionId } = require("../middlewares/middleware.js");
-const { confirmProjectStatus } = require("../middlewares/middleware.js");
-
+const {
+  checkActionId,
+  checkProjectId,
+} = require("../middlewares/middleware.js");
+const { validateAction } = require("../middlewares/middleware.js");
 const Action = require("./actions-model");
 
 const router = express.Router();
@@ -31,16 +33,10 @@ router.get("/:id", checkActionId, (req, res) => {
     });
 });
 
-router.post("/", confirmProjectStatus, (res, req) => {
+router.post("/", validateAction, checkProjectId, (res, req) => {
   Action.insert(req.body)
     .then((action) => {
-      if (!action.project_id || !action.description || !action.notes) {
-        res
-          .status(400)
-          .json({ message: "Description and notes are required." });
-      } else {
-        res.status(201).json(action);
-      }
+      res.status(201).json(action);
     })
     .catch((error) => {
       console.log(error);
