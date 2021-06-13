@@ -15,5 +15,5 @@ Pull your server into this file and start it!
 const server = require("./api/server.js");
 
 server.listen(5000, () => {
-  console.log("Server is running on Port 5000");
+  console.log("\n* Server Running on http://localhost:5000 *\n");
 });
