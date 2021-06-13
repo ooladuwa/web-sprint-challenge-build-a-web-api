@@ -1,4 +1,3 @@
-// Write your "projects" router here!
 const express = require("express");
 const { checkProjectId } = require("../middlewares/middleware.js");
 
@@ -85,6 +84,16 @@ router.delete("/:id", checkProjectId, (req, res) => {
       res
         .status(201)
         .json({ message: "The project has been successfully deleted" });
+    })
+    .catch((error) => {
+      res.status(500).json({ message: `Error: ${error}` });
+    });
+});
+
+router.get("/:id/actions", checkProjectId, (req, res) => {
+  Project.get(req.params.id)
+    .then((project) => {
+      res.status(200).json(project.actions);
     })
     .catch((error) => {
       res.status(500).json({ message: `Error: ${error}` });
