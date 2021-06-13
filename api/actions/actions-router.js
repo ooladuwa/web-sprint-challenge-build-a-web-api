@@ -33,7 +33,7 @@ router.get("/:id", checkActionId, (req, res) => {
     });
 });
 
-router.post("/", validateAction, checkProjectId, (res, req) => {
+router.post("/", validateAction, (res, req) => {
   Action.insert(req.body)
     .then((action) => {
       res.status(201).json(action);
